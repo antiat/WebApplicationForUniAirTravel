@@ -1,0 +1,33 @@
+"""
+URL patterns for users application.
+"""
+from django.urls import path
+from rest_framework_simplejwt.views import TokenRefreshView
+
+from .views import (
+    CustomTokenObtainPairView,
+    RegisterView,
+    LogoutView,
+    ProfileView,
+    PassengerProfileView,
+    ChangePasswordView,
+    AdminUserListView,
+    AdminUserDetailView,
+)
+
+urlpatterns = [
+    # Authentication
+    path('login/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('register/', RegisterView.as_view(), name='register'),
+    path('logout/', LogoutView.as_view(), name='logout'),
+
+    # Profile
+    path('profile/', ProfileView.as_view(), name='profile'),
+    path('profile/passenger/', PassengerProfileView.as_view(), name='passenger_profile'),
+    path('profile/change-password/', ChangePasswordView.as_view(), name='change_password'),
+
+    # Admin user management
+    path('users/', AdminUserListView.as_view(), name='admin_user_list'),
+    path('users/<int:pk>/', AdminUserDetailView.as_view(), name='admin_user_detail'),
+]

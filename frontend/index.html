@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AirLine — Поиск рейсов</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-airline">
+    <div class="container">
+        <a class="navbar-brand" href="index.html">✈ Air<span>Line</span></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navMain">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item"><a class="nav-link active" href="index.html"><i class="bi bi-search"></i> Поиск рейсов</a></li>
+                <li class="nav-item"><a class="nav-link" href="flights.html"><i class="bi bi-airplane"></i> Все рейсы</a></li>
+            </ul>
+            <ul class="navbar-nav ms-auto">
+                <!-- Not logged in -->
+                <li class="nav-item" id="nav-auth">
+                    <a class="nav-link" href="login.html"><i class="bi bi-box-arrow-in-right"></i> Войти</a>
+                </li>
+                <li class="nav-item" id="nav-auth-reg" style="display:none">
+                    <a class="nav-link" href="register.html"><i class="bi bi-person-plus"></i> Регистрация</a>
+                </li>
+                <!-- Logged in -->
+                <li class="nav-item dropdown d-none" id="nav-user">
+                    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                        <i class="bi bi-person-circle"></i> <span id="nav-username">User</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="my-tickets.html"><i class="bi bi-ticket-perforated me-2"></i>Мои билеты</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="#" onclick="logout()"><i class="bi bi-box-arrow-right me-2"></i>Выйти</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item d-none" id="nav-admin">
+                    <a class="nav-link" href="admin-dashboard.html"><i class="bi bi-shield-lock"></i> Панель</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-4 mb-lg-0">
+                <h1>Найдите свой идеальный рейс</h1>
+                <p class="lead opacity-75 mb-0">Более 140 направлений по всему миру. Лучшие цены — гарантировано.</p>
+            </div>
+            <div class="col-lg-6">
+                <div class="card search-card">
+                    <div class="card-header py-3">
+                        <i class="bi bi-search me-2"></i>Поиск рейсов
+                    </div>
+                    <div class="card-body p-4">
+                        <div id="search-alert"></div>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Откуда</label>
+                                <input type="text" class="form-control" id="from_city" placeholder="Город отправления">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Куда</label>
+                                <input type="text" class="form-control" id="to_city" placeholder="Город прилёта">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Дата вылета</label>
+                                <input type="date" class="form-control" id="search_date">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Макс. цена ($)</label>
+                                <input type="number" class="form-control" id="max_price" placeholder="Любая цена">
+                            </div>
+                            <div class="col-12">
+                                <button class="btn btn-airline w-100 py-2" onclick="searchFlights()">
+                                    <i class="bi bi-search me-2"></i>Найти рейсы
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Results -->
+<section class="py-5">
+    <div class="container">
+        <div id="results-section" class="d-none">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="fw-bold mb-0">Результаты поиска <span id="results-count" class="text-muted fs-6"></span></h4>
+                <button class="btn btn-outline-secondary btn-sm" onclick="clearSearch()">
+                    <i class="bi bi-x-circle me-1"></i>Сбросить
+                </button>
+            </div>
+            <div id="flights-container" class="row g-3"></div>
+        </div>
+
+        <!-- Default content -->
+        <div id="default-section">
+            <h4 class="fw-bold mb-4">Популярные направления</h4>
+            <div id="popular-flights" class="row g-3">
+                <div class="col-12 text-center py-4">
+                    <div class="spinner-border spinner-airline" role="status"></div>
+                    <p class="text-muted mt-2">Загружаем рейсы...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer>
+    <div class="container text-center">
+        <p class="mb-1">© 2024 AirLine Web Application — Учебный проект</p>
+        <p class="mb-0">Разработчики: <strong class="text-white">Марьичев Игорь</strong> (Dev/Scrum) · <strong class="text-white">Хуссейн Моханад</strong> (QA/Arch)</p>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/api.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        updateNavbar();
+        loadPopularFlights();
+        // Set min date to today
+        document.getElementById('search_date').min = new Date().toISOString().split('T')[0];
+    });
+
+    async function loadPopularFlights() {
+        try {
+            const data = await api.flights.list({ ordering: 'departure_time' });
+            const flights = data.results || data;
+            const container = document.getElementById('popular-flights');
+            if (!flights || flights.length === 0) {
+                container.innerHTML = '<div class="col-12 text-center text-muted">Рейсы не найдены</div>';
+                return;
+            }
+            container.innerHTML = flights.slice(0, 6).map(renderFlightCard).join('');
+        } catch (e) {
+            document.getElementById('popular-flights').innerHTML =
+                '<div class="col-12"><div class="alert alert-warning">Не удалось загрузить рейсы. Убедитесь, что сервер запущен.</div></div>';
+        }
+    }
+
+    async function searchFlights() {
+        const params = {};
+        const from = document.getElementById('from_city').value.trim();
+        const to = document.getElementById('to_city').value.trim();
+        const date = document.getElementById('search_date').value;
+        const maxPrice = document.getElementById('max_price').value;
+
+        if (from) params.from_city = from;
+        if (to) params.to_city = to;
+        if (date) params.date = date;
+        if (maxPrice) params.max_price = maxPrice;
+
+        try {
+            const data = await api.flights.list(params);
+            const flights = data.results || data;
+
+            document.getElementById('default-section').classList.add('d-none');
+            document.getElementById('results-section').classList.remove('d-none');
+            document.getElementById('results-count').textContent = `(${flights.length} найдено)`;
+
+            const container = document.getElementById('flights-container');
+            if (!flights.length) {
+                container.innerHTML = '<div class="col-12"><div class="alert alert-info">По вашему запросу рейсы не найдены. Попробуйте изменить параметры.</div></div>';
+                return;
+            }
+            container.innerHTML = flights.map(renderFlightCard).join('');
+        } catch (e) {
+            showErrors('search-alert', e);
+        }
+    }
+
+    function clearSearch() {
+        document.getElementById('from_city').value = '';
+        document.getElementById('to_city').value = '';
+        document.getElementById('search_date').value = '';
+        document.getElementById('max_price').value = '';
+        document.getElementById('results-section').classList.add('d-none');
+        document.getElementById('default-section').classList.remove('d-none');
+    }
+
+    function renderFlightCard(f) {
+        const dep = f.departure_airport;
+        const arr = f.arrival_airport;
+        const h = Math.floor(f.duration_minutes / 60);
+        const m = f.duration_minutes % 60;
+        return `
+        <div class="col-md-6 col-lg-4">
+            <div class="card flight-card h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <small class="text-muted">${f.flight_number}</small>
+                        ${statusBadge(f.status)}
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div class="text-center">
+                            <div class="flight-route">${dep.code}</div>
+                            <div class="flight-meta">${dep.city}</div>
+                        </div>
+                        <div class="text-center px-2">
+                            <div class="flight-arrow">✈</div>
+                            <div class="flight-meta">${h}ч ${m}мин</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="flight-route">${arr.code}</div>
+                            <div class="flight-meta">${arr.city}</div>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <div class="flight-meta"><i class="bi bi-calendar3 me-1"></i>${formatDate(f.departure_time)}</div>
+                            <div class="flight-meta"><i class="bi bi-people me-1"></i>${f.available_seats} мест</div>
+                        </div>
+                        <div class="flight-price">${formatPrice(f.base_price)}</div>
+                    </div>
+                    ${f.is_bookable
+                        ? `<a href="booking.html?flight_id=${f.id}" class="btn btn-airline w-100">
+                               <i class="bi bi-ticket-perforated me-1"></i>Забронировать
+                           </a>`
+                        : `<button class="btn btn-secondary w-100" disabled>Недоступен</button>`
+                    }
+                </div>
+            </div>
+        </div>`;
+    }
+
+    async function logout() {
+        const refresh = Auth.getRefresh();
+        try { await api.auth.logout(refresh); } catch {}
+        Auth.clearTokens();
+        window.location.reload();
+    }
+</script>
+</body>
+</html>

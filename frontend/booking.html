@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Бронирование — AirLine</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="css/main.css">
+    <style>
+        .seat-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; max-width: 320px; }
+        .seat-btn { padding: 6px 4px; font-size: 0.75rem; font-weight: 600; border-radius: 6px; cursor: pointer;
+                    border: 2px solid #dee2e6; background: #fff; transition: all 0.15s; }
+        .seat-btn:hover:not(.taken) { border-color: var(--airline-sky); background: rgba(27,156,234,0.1); }
+        .seat-btn.selected { background: var(--airline-sky); color: #fff; border-color: var(--airline-sky); }
+        .seat-btn.taken { background: #e9ecef; color: #adb5bd; cursor: not-allowed; border-color: #e9ecef; }
+        .flight-summary-card { border-left: 4px solid var(--airline-sky); border-radius: 0 12px 12px 0; }
+    </style>
+</head>
+<body>
+<!-- Navbar -->
+<nav class="navbar navbar-airline">
+    <div class="container">
+        <a class="navbar-brand" href="index.html">✈ Air<span>Line</span></a>
+        <div class="ms-auto d-flex gap-2">
+            <a href="my-tickets.html" class="btn btn-outline-light btn-sm"><i class="bi bi-ticket-perforated me-1"></i>Мои билеты</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12 mb-4">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="index.html">Главная</a></li>
+                    <li class="breadcrumb-item"><a href="flights.html">Рейсы</a></li>
+                    <li class="breadcrumb-item active">Бронирование</li>
+                </ol>
+            </nav>
+            <h2 class="fw-bold">Бронирование билета</h2>
+            <p class="text-muted">UC-001 · Выберите место и подтвердите бронирование</p>
+        </div>
+    </div>
+
+    <div id="page-alert"></div>
+    <div id="loading" class="text-center py-5">
+        <div class="spinner-border spinner-airline" role="status"></div>
+        <p class="mt-2 text-muted">Загружаем данные рейса...</p>
+    </div>
+
+    <div id="booking-content" class="d-none">
+        <div class="row g-4">
+            <!-- Flight info -->
+            <div class="col-lg-5">
+                <div class="card flight-summary-card p-4 mb-4">
+                    <h5 class="fw-bold mb-3"><i class="bi bi-airplane me-2 text-primary"></i>Информация о рейсе</h5>
+                    <div id="flight-info"></div>
+                </div>
+
+                <!-- Passenger info -->
+                <div class="card p-4">
+                    <h5 class="fw-bold mb-3"><i class="bi bi-person me-2 text-primary"></i>Пассажир</h5>
+                    <div id="passenger-info">
+                        <div class="text-muted small">Загружаем данные пассажира...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Seat selection -->
+            <div class="col-lg-7">
+                <div class="card p-4">
+                    <h5 class="fw-bold mb-3"><i class="bi bi-grid-3x3 me-2 text-primary"></i>Выбор места</h5>
+                    <div class="mb-3 d-flex gap-3 flex-wrap">
+                        <span class="d-flex align-items-center gap-1">
+                            <span style="width:20px;height:20px;background:#fff;border:2px solid #dee2e6;border-radius:4px;display:inline-block"></span>
+                            <small class="text-muted">Свободно</small>
+                        </span>
+                        <span class="d-flex align-items-center gap-1">
+                            <span style="width:20px;height:20px;background:var(--airline-sky);border-radius:4px;display:inline-block"></span>
+                            <small class="text-muted">Выбрано</small>
+                        </span>
+                        <span class="d-flex align-items-center gap-1">
+                            <span style="width:20px;height:20px;background:#e9ecef;border-radius:4px;display:inline-block"></span>
+                            <small class="text-muted">Занято</small>
+                        </span>
+                    </div>
+
+                    <!-- Row labels + seat grid -->
+                    <div id="seat-map" class="overflow-auto"></div>
+
+                    <div id="selected-seat-info" class="alert alert-info d-none mt-3">
+                        <i class="bi bi-check-circle me-2"></i>
+                        Выбрано место: <strong id="selected-seat-label">—</strong>
+                    </div>
+                </div>
+
+                <!-- Confirm -->
+                <div class="card p-4 mt-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="fw-semibold">Итого к оплате:</span>
+                        <span class="flight-price" id="total-price">—</span>
+                    </div>
+                    <div id="confirm-alert"></div>
+                    <button class="btn btn-airline w-100 py-2" onclick="confirmBooking()" id="confirm-btn" disabled>
+                        <i class="bi bi-check-circle me-1"></i>Подтвердить бронирование
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/api.js"></script>
+<script>
+    let flightData = null;
+    let selectedSeat = null;
+    let takenSeats = new Set();
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        if (!requireAuth('/login.html?next=' + encodeURIComponent(window.location.href))) return;
+
+        const params = new URLSearchParams(window.location.search);
+        const flightId = params.get('flight_id');
+        if (!flightId) { window.location.href = 'flights.html'; return; }
+
+        try {
+            const [flight, tickets, profile] = await Promise.all([
+                api.flights.get(flightId),
+                fetch(`${API_BASE_DIRECT}/bookings/tickets/?flight=${flightId}`).catch(() => null),
+                api.auth.passengerProfile(),
+            ]);
+
+            flightData = flight;
+            renderFlightInfo(flight);
+            renderPassengerInfo(profile);
+            renderSeatMap(flight.aircraft.capacity, []);
+
+            document.getElementById('total-price').textContent = formatPrice(flight.base_price);
+            document.getElementById('loading').classList.add('d-none');
+            document.getElementById('booking-content').classList.remove('d-none');
+        } catch (e) {
+            document.getElementById('loading').innerHTML =
+                `<div class="alert alert-danger">Ошибка загрузки: ${e.message || 'Проверьте подключение к серверу'}</div>`;
+        }
+    });
+
+    // Expose API_BASE_DIRECT for direct calls
+    const API_BASE_DIRECT = 'http://localhost:8000/api/v1';
+
+    function renderFlightInfo(f) {
+        const dep = f.departure_airport;
+        const arr = f.arrival_airport;
+        const h = Math.floor(f.duration_minutes / 60);
+        const m = f.duration_minutes % 60;
+        document.getElementById('flight-info').innerHTML = `
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="text-center">
+                    <div class="fs-2 fw-bold text-primary">${dep.code}</div>
+                    <div class="text-muted small">${dep.city}</div>
+                    <div class="small">${formatDate(f.departure_time)}</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-primary fs-5">✈</div>
+                    <div class="text-muted small">${h}ч ${m}мин</div>
+                </div>
+                <div class="text-center">
+                    <div class="fs-2 fw-bold text-primary">${arr.code}</div>
+                    <div class="text-muted small">${arr.city}</div>
+                    <div class="small">${formatDate(f.arrival_time)}</div>
+                </div>
+            </div>
+            <hr>
+            <table class="table table-sm mb-0">
+                <tr><td class="text-muted">Рейс</td><td class="fw-semibold">${f.flight_number}</td></tr>
+                <tr><td class="text-muted">Самолёт</td><td>${f.aircraft.model}</td></tr>
+                <tr><td class="text-muted">Авиакомпания</td><td>${f.aircraft.airline}</td></tr>
+                <tr><td class="text-muted">Свободных мест</td><td>${f.available_seats}</td></tr>
+                <tr><td class="text-muted">Статус</td><td>${statusBadge(f.status)}</td></tr>
+            </table>`;
+    }
+
+    function renderPassengerInfo(p) {
+        if (!p) {
+            document.getElementById('passenger-info').innerHTML =
+                '<div class="alert alert-warning small">Профиль пассажира не заполнен. <a href="#">Заполнить</a></div>';
+            return;
+        }
+        document.getElementById('passenger-info').innerHTML = `
+            <table class="table table-sm mb-0">
+                <tr><td class="text-muted">Имя</td><td>${p.first_name} ${p.last_name}</td></tr>
+                <tr><td class="text-muted">Паспорт</td><td>${p.passport_number}</td></tr>
+                <tr><td class="text-muted">Гражданство</td><td>${p.nationality}</td></tr>
+            </table>`;
+    }
+
+    function renderSeatMap(capacity, taken) {
+        takenSeats = new Set(taken);
+        const rows = Math.ceil(capacity / 6);
+        const cols = ['A','B','C','D','E','F'];
+        let html = '<div style="overflow-x:auto"><table class="table table-bordered table-sm text-center" style="min-width:280px">';
+        html += '<thead><tr><th class="text-muted" style="width:40px">Ряд</th>';
+        cols.forEach(c => html += `<th>${c}</th>`);
+        html += '</tr></thead><tbody>';
+
+        for (let r = 1; r <= rows; r++) {
+            html += `<tr><td class="text-muted fw-bold">${r}</td>`;
+            cols.forEach(c => {
+                const seat = `${r}${c}`;
+                const isTaken = takenSeats.has(seat);
+                html += `<td>
+                    <button class="seat-btn w-100 ${isTaken ? 'taken' : ''}"
+                            id="seat-${seat}"
+                            onclick="${isTaken ? '' : `selectSeat('${seat}')`}"
+                            title="${seat}">
+                        ${seat}
+                    </button>
+                </td>`;
+            });
+            html += '</tr>';
+        }
+        html += '</tbody></table></div>';
+        document.getElementById('seat-map').innerHTML = html;
+    }
+
+    function selectSeat(seat) {
+        // Deselect previous
+        if (selectedSeat) {
+            document.getElementById(`seat-${selectedSeat}`)?.classList.remove('selected');
+        }
+        selectedSeat = seat;
+        document.getElementById(`seat-${seat}`)?.classList.add('selected');
+        document.getElementById('selected-seat-label').textContent = seat;
+        document.getElementById('selected-seat-info').classList.remove('d-none');
+        document.getElementById('confirm-btn').disabled = false;
+    }
+
+    async function confirmBooking() {
+        if (!selectedSeat || !flightData) return;
+        const btn = document.getElementById('confirm-btn');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Бронируем...';
+
+        try {
+            const booking = await api.bookings.create(flightData.id, selectedSeat);
+            showAlert('confirm-alert',
+                `<strong>✓ Бронирование подтверждено!</strong> #${booking.id} — Место ${selectedSeat}`, 'success');
+            btn.innerHTML = '<i class="bi bi-check-circle me-1"></i>Забронировано!';
+            setTimeout(() => window.location.href = 'my-tickets.html', 2000);
+        } catch (e) {
+            showErrors('confirm-alert', e);
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-check-circle me-1"></i>Подтвердить бронирование';
+        }
+    }
+</script>
+</body>
+</html>

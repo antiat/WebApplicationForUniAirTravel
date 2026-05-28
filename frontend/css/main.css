@@ -1,0 +1,226 @@
+/* ─────────────────────────────────────────
+   Airline Web App — main.css
+   Custom styles on top of Bootstrap 5
+   ───────────────────────────────────────── */
+
+:root {
+    --airline-primary: #0A2342;
+    --airline-accent: #E8343A;
+    --airline-sky: #1B9CEA;
+    --airline-light: #F0F4F8;
+    --airline-gold: #F5A623;
+}
+
+/* ── Base ── */
+body {
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    color: #212529;
+}
+
+/* ── Navbar ── */
+.navbar-airline {
+    background-color: var(--airline-primary);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+}
+.navbar-airline .navbar-brand {
+    color: #fff !important;
+    font-weight: 700;
+    font-size: 1.4rem;
+    letter-spacing: 0.5px;
+}
+.navbar-airline .navbar-brand span {
+    color: var(--airline-accent);
+}
+.navbar-airline .nav-link {
+    color: rgba(255,255,255,0.85) !important;
+    transition: color 0.2s;
+}
+.navbar-airline .nav-link:hover,
+.navbar-airline .nav-link.active {
+    color: #fff !important;
+}
+
+/* ── Hero ── */
+.hero-section {
+    background: linear-gradient(135deg, var(--airline-primary) 0%, #1a3a60 60%, var(--airline-sky) 100%);
+    color: #fff;
+    padding: 80px 0 60px;
+    position: relative;
+    overflow: hidden;
+}
+.hero-section::after {
+    content: '✈';
+    position: absolute;
+    right: 6%;
+    top: 50%;
+    transform: translateY(-50%) rotate(-15deg);
+    font-size: 9rem;
+    opacity: 0.08;
+    pointer-events: none;
+}
+.hero-section h1 { font-weight: 800; font-size: 2.6rem; }
+
+/* ── Search card ── */
+.search-card {
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(10,35,66,0.18);
+    background: #fff;
+}
+.search-card .card-header {
+    background: var(--airline-primary);
+    color: #fff;
+    border-radius: 16px 16px 0 0 !important;
+    font-weight: 600;
+    font-size: 1.05rem;
+}
+
+/* ── Flight card ── */
+.flight-card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(10,35,66,0.10);
+    transition: transform 0.18s, box-shadow 0.18s;
+    background: #fff;
+}
+.flight-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 28px rgba(10,35,66,0.18);
+}
+.flight-route {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--airline-primary);
+    letter-spacing: 1px;
+}
+.flight-arrow {
+    color: var(--airline-sky);
+    font-size: 1.3rem;
+}
+.flight-price {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--airline-accent);
+}
+.flight-meta {
+    font-size: 0.83rem;
+    color: #6c757d;
+}
+
+/* ── Stat cards (admin) ── */
+.stat-card {
+    border: none;
+    border-radius: 12px;
+    color: #fff;
+    padding: 20px 24px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+}
+.stat-card.primary { background: linear-gradient(135deg, var(--airline-primary), #1a5276); }
+.stat-card.accent  { background: linear-gradient(135deg, var(--airline-accent), #c0392b); }
+.stat-card.sky     { background: linear-gradient(135deg, var(--airline-sky), #1565c0); }
+.stat-card.gold    { background: linear-gradient(135deg, var(--airline-gold), #e67e22); }
+.stat-card .stat-number { font-size: 2rem; font-weight: 800; }
+.stat-card .stat-label  { font-size: 0.88rem; opacity: 0.85; }
+
+/* ── Tables ── */
+.table-airline thead {
+    background-color: var(--airline-primary);
+    color: #fff;
+}
+.table-airline tbody tr:hover {
+    background-color: rgba(27, 156, 234, 0.07);
+}
+
+/* ── Buttons ── */
+.btn-airline {
+    background-color: var(--airline-accent);
+    border-color: var(--airline-accent);
+    color: #fff;
+    font-weight: 600;
+}
+.btn-airline:hover {
+    background-color: #c0392b;
+    border-color: #c0392b;
+    color: #fff;
+}
+.btn-sky {
+    background-color: var(--airline-sky);
+    border-color: var(--airline-sky);
+    color: #fff;
+    font-weight: 600;
+}
+.btn-sky:hover {
+    background-color: #1565c0;
+    color: #fff;
+}
+
+/* ── Ticket card ── */
+.ticket-card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(10,35,66,0.10);
+    background: #fff;
+    position: relative;
+    overflow: hidden;
+}
+.ticket-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 5px;
+    background: var(--airline-sky);
+    border-radius: 12px 0 0 12px;
+}
+.ticket-card.status-cancelled::before { background: #dc3545; }
+.ticket-card.status-used::before      { background: #6c757d; }
+
+/* ── Sidebar (admin) ── */
+.admin-sidebar {
+    background: var(--airline-primary);
+    min-height: 100vh;
+    padding-top: 20px;
+}
+.admin-sidebar .nav-link {
+    color: rgba(255,255,255,0.75);
+    padding: 10px 20px;
+    border-radius: 8px;
+    margin: 2px 8px;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+.admin-sidebar .nav-link:hover,
+.admin-sidebar .nav-link.active {
+    background: rgba(255,255,255,0.12);
+    color: #fff;
+}
+.admin-sidebar .nav-link i { margin-right: 8px; width: 18px; }
+
+/* ── Loading spinner ── */
+.spinner-airline {
+    color: var(--airline-sky);
+}
+
+/* ── Forms ── */
+.form-control:focus, .form-select:focus {
+    border-color: var(--airline-sky);
+    box-shadow: 0 0 0 0.2rem rgba(27,156,234,0.25);
+}
+
+/* ── Footer ── */
+footer {
+    background: var(--airline-primary);
+    color: rgba(255,255,255,0.7);
+    padding: 24px 0;
+    margin-top: 60px;
+    font-size: 0.88rem;
+}
+footer a { color: rgba(255,255,255,0.55); text-decoration: none; }
+footer a:hover { color: #fff; }
+
+/* ── Responsive ── */
+@media (max-width: 576px) {
+    .hero-section h1 { font-size: 1.8rem; }
+    .flight-route    { font-size: 1.1rem; }
+    .flight-price    { font-size: 1.1rem; }
+}
