@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Управление авиапарком — Админка</title>
+    <link href="https://jsdelivr.net" rel="stylesheet">
+    <link href="https://jsdelivr.net" rel="stylesheet">
+    <style>
+        body { background-color: #f8f9fa; font-family: system-ui, sans-serif; min-height: 100vh; display: flex; flex-direction: column; }
+        .main-wrapper { flex: 1; }
+        .info-card, .admin-card { background: #ffffff; border: 1px solid #e3e6f0; border-radius: 0.5rem; padding: 1.5rem; box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.05); }
+        footer { background-color: #ffffff; border-top: 1px solid #e3e6f0; padding: 1.5rem 0; color: #858796; font-size: 0.85rem; }
+    </style>
+</head>
+<body>
+<div class="main-wrapper pb-5">
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="home.html"><i class="bi bi-airplane-fill text-primary me-2"></i>Airline Admin</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav ms-auto gap-2">
+                    <li class="nav-item"><a class="nav-link" href="admin-users.html">Пользователи</a></li>
+                    <li class="nav-item"><a class="nav-link" href="admin-flights.html">Рейсы</a></li>
+                    <li class="nav-item"><a class="nav-link" href="admin-airports.html">Аэропорты</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="admin-aircraft.html">Самолеты</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- CONTENT -->
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="fw-bold mb-1">Управление авиапарком</h2>
+                <p class="text-muted small mb-0">Контроль воздушных судов авиакомпании и конфигурации мест</p>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-xl-4">
+                <div class="admin-card">
+                    <h5 class="fw-bold mb-3"><i class="bi bi-cpu-fill text-primary me-2"></i>Добавить ВС</h5>
+                    <form id="add-aircraft-form">
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Бортовой номер</label>
+                            <input type="text" id="aircraft-reg" class="form-control form-control-sm" placeholder="RA-73025" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Модель самолета</label>
+                            <input type="text" id="aircraft-model" class="form-control form-control-sm" placeholder="Boeing 737-800" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Макс. вместимость</label>
+                            <input type="number" id="aircraft-capacity" class="form-control form-control-sm" value="189" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-sm w-100 fw-bold"><i class="bi bi-plus-square-fill me-1"></i>Добавить в парк</button>
+                    </form>
+                </div>
+            </div>
+            <div class="col-xl-8">
+                <div class="info-card">
+                    <h5 class="fw-bold mb-3"><i class="bi bi-airplane text-primary me-2"></i>Зарегистрированные борта</h5>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0 small">
+                            <thead class="table-light text-muted">
+                                <tr>
+                                    <th>Бортовой №</th>
+                                    <th>Модель</th>
+                                    <th>Вместимость</th>
+                                    <th>Действие</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-aircraft-list">
+                                <!-- Данные -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+        <span>© 2026 <strong>Airline Web Application</strong> — Управление авиапарком</span>
+        <span><strong>Марьичев Игорь</strong> &nbsp;·&nbsp; <strong>Хуссейн Моханад</strong></span>
+    </div>
+</footer>
+
+<script src="https://jsdelivr.net"></script>
+<script src="js/api.js"></script>
+</body>
+</html>

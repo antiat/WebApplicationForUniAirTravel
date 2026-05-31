@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Поиск авиарейсов — AirLine</title>
+    
+    <!-- Оригинальные ссылки Клода на Bootstrap, как в login.html -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <!-- Главный кастомный CSS вашего проекта -->
+    <link rel="stylesheet" href="css/main.css">
+    
+    <style>
+        body { 
+            background-color: #f4f7fc; 
+            font-family: system-ui, -apple-system, sans-serif; 
+            min-height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+        }
+        .main-wrapper { flex: 1; }
+        
+        /* Стилизация боковой панели поиска */
+        .search-sidebar {
+            background: #ffffff;
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(10, 35, 66, 0.06);
+        }
+        
+        footer { 
+            background-color: #ffffff; 
+            border-top: 1px solid #e3e6f0; 
+            padding: 1.5rem 0; 
+            color: #858796; 
+            font-size: 0.85rem; 
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-wrapper pb-5">
+    <!-- Navbar из вашего оригинального макета -->
+    <nav class="navbar navbar-expand-lg navbar-airline mb-5 shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">✈ Air<span>Line</span></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navMain">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link" href="index.html"><i class="bi bi-search"></i> Поиск рейсов</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="flights.html"><i class="bi bi-airplane"></i> Все рейсы</a></li>
+                </ul>
+                <ul class="navbar-nav ms-auto gap-2">
+                    <!-- Кнопка Войти для гостей -->
+                    <li class="nav-item" id="nav-auth">
+                        <a class="nav-link btn btn-outline-light btn-sm fw-bold px-3 text-white" href="login.html">
+                            <i class="bi bi-box-arrow-in-right me-1"></i>Войти
+                        </a>
+                    </li>
+                    <!-- Кнопка Регистрация для гостей -->
+                    <li class="nav-item" id="nav-auth-reg">
+                        <a class="nav-link btn btn-primary btn-sm fw-bold px-3 text-white" href="register.html">
+                            <i class="bi bi-person-plus me-1"></i>Регистрация
+                        </a>
+                    </li>
+                    <!-- Выпадающее меню для авторизованных пользователей (изначально скрыто d-none) -->
+                    <li class="nav-item dropdown d-none" id="nav-user">
+                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" role="button">
+                            <i class="bi bi-person-circle me-1"></i><span id="nav-username">User</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end border-0 shadow">
+                            <li><a class="dropdown-item" href="my-tickets.html"><i class="bi bi-ticket-perforated me-2"></i>Мои билеты</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="#" onclick="logout()"><i class="bi bi-box-arrow-right me-2"></i>Выйти</a></li>
+                        </ul>
+                    </li>
+                    <!-- Ссылка на панель администратора (изначально скрыта d-none) -->
+                    <li class="nav-item d-none" id="nav-admin">
+                        <a class="nav-link fw-bold text-warning" href="admin-dashboard.html">
+                            <i class="bi bi-shield-lock me-1"></i>Панель
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="mb-5">
+            <h2 class="fw-bold mb-1 text-dark">Доступные авиарейсы</h2>
+            <p class="text-muted">Используйте фильтры, чтобы найти подходящие билеты на самолет</p>
+        </div>
+
+        <div class="row g-4">
+            <!-- Левая колонка: Фильтры -->
+            <div class="col-lg-4">
+                <div class="search-sidebar p-4">
+                    <h5 class="fw-bold mb-4 text-dark">
+                        <i class="bi bi-sliders text-primary me-2"></i>Параметры поиска
+                    </h5>
+                    <form id="search-form">
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-secondary">Откуда</label>
+                            <input type="text" id="from-location" class="form-control" placeholder="Город вылета">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-secondary">Куда</label>
+                            <input type="text" id="to-location" class="form-control" placeholder="Город прибытия">
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label small fw-bold text-secondary">Дата вылета</label>
+                            <input type="date" id="departure-date" class="form-control">
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 fw-bold py-2 rounded-3">
+                            <i class="bi bi-search me-2"></i>Найти рейсы
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Правая колонка: Результаты -->
+            <div class="col-lg-8">
+                <div id="flights-container" class="d-flex flex-column gap-3">
+                    <p class="text-muted">Загрузка рейсов...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+        <span>© 2026 <strong>Airline Web Application</strong> — Поиск билетов</span>
+        <span><strong>Марьичев Игорь</strong> &nbsp;·&nbsp; <strong>Хуссейн Моханад</strong></span>
+    </div>
+</footer>
+
+<script src="https://jsdelivr.net"></script>
+<script src="js/api.js"></script>
+<script src="js/flights.js?v=final_version_3"></script>
+<script src="js/auth.js?v=final_navbar_fix"></script>
+</body>
+</html>

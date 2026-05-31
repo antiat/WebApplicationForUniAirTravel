@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Airline Web Application</title>
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        :root {
+            --airline-dark: #0A2342;
+            --airline-accent: #E8343A;
+            --airline-sky: #1B9CEA;
+        }
+
+        body {
+            background-color: #f0f4f8;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        /* ── Header ── */
+        .hero {
+            background: linear-gradient(135deg, var(--airline-dark) 0%, #1a3a60 60%, var(--airline-sky) 100%);
+            color: #fff;
+            padding: 60px 0 50px;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::after {
+            content: '✈';
+            position: absolute;
+            right: 5%;
+            top: 50%;
+            transform: translateY(-50%) rotate(-15deg);
+            font-size: 10rem;
+            opacity: 0.07;
+            pointer-events: none;
+        }
+        .hero-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 50px;
+            padding: 4px 16px;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+        }
+        .hero h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+        .hero h1 span { color: #63b3ed; }
+        .hero p.lead { opacity: 0.82; font-size: 1.1rem; }
+
+        /* ── Section cards ── */
+        .section-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #6c757d;
+            margin-bottom: 12px;
+        }
+
+        .link-card {
+            background: #fff;
+            border: none;
+            border-radius: 14px;
+            box-shadow: 0 2px 12px rgba(10,35,66,0.09);
+            padding: 22px 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            text-decoration: none;
+            color: inherit;
+            transition: transform 0.18s, box-shadow 0.18s;
+            height: 100%;
+        }
+        .link-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 28px rgba(10,35,66,0.15);
+            color: inherit;
+        }
+        .link-card .icon-wrap {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.35rem;
+            flex-shrink: 0;
+        }
+        .icon-dark  { background: rgba(10,35,66,0.08);  color: var(--airline-dark); }
+        .icon-green { background: rgba(25,135,84,0.1);  color: #198754; }
+        .icon-blue  { background: rgba(27,156,234,0.12); color: var(--airline-sky); }
+        .icon-indigo{ background: rgba(102,16,242,0.1); color: #6610f2; }
+        .icon-red   { background: rgba(232,52,58,0.1);  color: var(--airline-accent); }
+        .icon-teal  { background: rgba(32,201,151,0.12);color: #20c997; }
+        .icon-orange{ background: rgba(253,126,20,0.12);color: #fd7e14; }
+
+        .link-card .card-label {
+            font-weight: 700;
+            font-size: 0.97rem;
+            margin-bottom: 2px;
+        }
+        .link-card .card-desc {
+            font-size: 0.8rem;
+            color: #6c757d;
+            line-height: 1.3;
+        }
+
+        /* ── Info block ── */
+        .info-card {
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 2px 12px rgba(10,35,66,0.09);
+            padding: 28px 32px;
+        }
+        .tech-badge {
+            display: inline-block;
+            background: #e9ecef;
+            border-radius: 6px;
+            padding: 4px 10px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: #495057;
+            margin: 3px 2px;
+        }
+
+        /* ── Team ── */
+        .team-card {
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 2px 12px rgba(10,35,66,0.09);
+            padding: 20px 24px;
+        }
+        .avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1rem;
+            color: #fff;
+            flex-shrink: 0;
+        }
+        .av-blue   { background: var(--airline-sky); }
+        .av-accent { background: var(--airline-accent); }
+
+        /* ── Footer ── */
+        footer {
+            background: var(--airline-dark);
+            color: rgba(255,255,255,0.6);
+            padding: 20px 0;
+            font-size: 0.85rem;
+            margin-top: 48px;
+        }
+        footer strong { color: rgba(255,255,255,0.9); }
+    </style>
+</head>
+<body>
+
+<!-- ══════════════ HERO ══════════════ -->
+<div class="hero">
+    <div class="container">
+        <div class="hero-badge">Учебный проект · ПО инженерия</div>
+        <h1>Airline <span>Web</span> Application</h1>
+        <p class="lead mb-1">Система управления авиаперевозками</p>
+        <p class="opacity-50 small mb-0">
+            Учебный проект по программной инженерии для автоматизации процессов авиакомпании.
+        </p>
+    </div>
+</div>
+
+<!-- ══════════════ MAIN ══════════════ -->
+<div class="container py-5">
+
+    <!-- ── Управление ── -->
+    <p class="section-title">Управление</p>
+    <div class="row g-3 mb-4">
+        <div class="col-md-6 col-lg-4">
+            <a href="/admin/" class="link-card">
+                <div class="icon-wrap icon-dark">
+                    <i class="bi bi-shield-lock-fill"></i>
+                </div>
+                <div>
+                    <div class="card-label">Django Admin</div>
+                    <div class="card-desc">Панель администратора. Управление всеми объектами БД.</div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- ── API Documentation ── -->
+    <p class="section-title">Документация API</p>
+    <div class="row g-3 mb-4">
+        <div class="col-md-6 col-lg-4">
+            <a href="/api/docs/" class="link-card">
+                <div class="icon-wrap icon-green">
+                    <i class="bi bi-file-earmark-code-fill"></i>
+                </div>
+                <div>
+                    <div class="card-label">Swagger UI</div>
+                    <div class="card-desc">Интерактивная документация. Тестирование эндпоинтов в браузере.</div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <a href="/api/redoc/" class="link-card">
+                <div class="icon-wrap icon-indigo">
+                    <i class="bi bi-book-fill"></i>
+                </div>
+                <div>
+                    <div class="card-label">ReDoc</div>
+                    <div class="card-desc">Красивая документация REST API в формате ReDoc.</div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <a href="/api/schema/" class="link-card">
+                <div class="icon-wrap icon-teal">
+                    <i class="bi bi-filetype-json"></i>
+                </div>
+                <div>
+                    <div class="card-label">OpenAPI Schema</div>
+                    <div class="card-desc">Схема API в формате OpenAPI 3.0 (JSON/YAML).</div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- ── API Endpoints ── -->
+    <p class="section-title">API Endpoints</p>
+    <div class="row g-3 mb-5">
+        <div class="col-md-6 col-lg-4">
+            <a href="/api/v1/auth/login/" class="link-card">
+                <div class="icon-wrap icon-blue">
+                    <i class="bi bi-person-badge-fill"></i>
+                </div>
+                <div>
+                    <div class="card-label">Авторизация</div>
+                    <div class="card-desc"><code>/api/v1/auth/</code> — JWT login, register, profile.</div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <a href="/api/v1/flights/" class="link-card">
+                <div class="icon-wrap icon-orange">
+                    <i class="bi bi-airplane-fill"></i>
+                </div>
+                <div>
+                    <div class="card-label">Рейсы</div>
+                    <div class="card-desc"><code>/api/v1/flights/</code> — поиск рейсов, аэропорты, самолёты.</div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <a href="/api/v1/bookings/" class="link-card">
+                <div class="icon-wrap icon-red">
+                    <i class="bi bi-ticket-perforated-fill"></i>
+                </div>
+                <div>
+                    <div class="card-label">Бронирования</div>
+                    <div class="card-desc"><code>/api/v1/bookings/</code> — создание, просмотр, отмена.</div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- ── Info + Team row ── -->
+    <div class="row g-4">
+
+        <!-- Project info -->
+        <div class="col-lg-7">
+            <div class="info-card h-100">
+                <h5 class="fw-bold mb-3">
+                    <i class="bi bi-info-circle-fill text-primary me-2"></i>О проекте
+                </h5>
+                <p class="text-muted small mb-3">
+                    Веб-приложение автоматизирует основные процессы авиакомпании:
+                    управление рейсами, регистрацию пассажиров, бронирование билетов
+                    и администрирование системы. Реализованы ролевая модель доступа (RBAC),
+                    JWT-аутентификация и полноценный REST API.
+                </p>
+                <div class="mb-3">
+                    <span class="section-title d-block mb-2">Технологии</span>
+                    <span class="tech-badge">Python 3.11+</span>
+                    <span class="tech-badge">Django 4.2</span>
+                    <span class="tech-badge">Django REST Framework</span>
+                    <span class="tech-badge">JWT Auth</span>
+                    <span class="tech-badge">PostgreSQL</span>
+                    <span class="tech-badge">Bootstrap 5</span>
+                    <span class="tech-badge">Swagger / OpenAPI</span>
+                </div>
+                <div>
+                    <span class="section-title d-block mb-2">Use Cases</span>
+                    <div class="d-flex flex-wrap gap-2">
+                        <span class="badge bg-light text-dark border">
+                            <i class="bi bi-check-circle-fill text-success me-1"></i>UC-001 Бронирование билета
+                        </span>
+                        <span class="badge bg-light text-dark border">
+                            <i class="bi bi-check-circle-fill text-success me-1"></i>UC-002 Авторизация
+                        </span>
+                        <span class="badge bg-light text-dark border">
+                            <i class="bi bi-check-circle-fill text-success me-1"></i>UC-003 Создание рейса
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Team -->
+        <div class="col-lg-5">
+            <div class="team-card h-100">
+                <h5 class="fw-bold mb-3">
+                    <i class="bi bi-people-fill text-primary me-2"></i>Команда разработчиков
+                </h5>
+
+                <div class="d-flex align-items-start gap-3 mb-3 pb-3 border-bottom">
+                    <div class="avatar av-blue">МИ</div>
+                    <div>
+                        <div class="fw-bold">Марьичев Игорь</div>
+                        <div class="small text-muted mb-1">
+                            <span class="badge bg-primary bg-opacity-10 text-primary me-1">Программист</span>
+                            <span class="badge bg-success bg-opacity-10 text-success">Scrum-мастер</span>
+                        </div>
+                        <div class="small text-muted">
+                            Backend разработка, управление спринтами, архитектура кода.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-start gap-3">
+                    <div class="avatar av-accent">ХМ</div>
+                    <div>
+                        <div class="fw-bold">Хуссейн Моханад</div>
+                        <div class="small text-muted mb-1">
+                            <span class="badge bg-warning bg-opacity-10 text-warning me-1">Тестировщик</span>
+                            <span class="badge bg-info bg-opacity-10 text-info me-1">Тех. писатель</span>
+                            <span class="badge bg-danger bg-opacity-10 text-danger">Архитектор</span>
+                        </div>
+                        <div class="small text-muted">
+                            Тестирование, документация API, системная архитектура.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- /row -->
+</div><!-- /container -->
+
+<!-- ══════════════ FOOTER ══════════════ -->
+<footer>
+    <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+        <span>© 2026 <strong>Airline Web Application</strong> — Учебный проект</span>
+        <span>
+            <strong>Марьичев Игорь</strong> &nbsp;·&nbsp; <strong>Хуссейн Моханад</strong>
+        </span>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/auth.js"></script>
+</body>
+</html>

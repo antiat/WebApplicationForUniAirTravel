@@ -118,11 +118,31 @@
         document.querySelectorAll('#ticket-tabs .nav-link').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
 
-        const filtered = status === 'all'
+        // Приводим искомый статус вкладки к нижнему регистру
+        const targetStatus = (status || '').toLowerCase();
+
+        const filtered = targetStatus === 'all'
             ? allBookings
-            : allBookings.filter(b => b.status === status);
+            : allBookings.filter(b => {
+                // Приводим реальный статус билета из базы бэкенда к нижнему регистру
+                const currentStatus = (b.status || '').toLowerCase();
+
+                // Если мы кликнули на вкладку "Активные"
+                if (targetStatus === 'active') {
+                    return currentStatus === 'active' || currentStatus === 'confirmed' || currentStatus === 'scheduled';
+                }
+
+                // Если мы кликнули на вкладку "Отмененные"
+                if (targetStatus === 'cancelled' || targetStatus === 'canceled') {
+                    return currentStatus === 'cancelled' || currentStatus === 'canceled' || currentStatus === 'refunded';
+                }
+
+                return currentStatus === targetStatus;
+            });
+
         renderBookings(filtered);
     }
+
 
     function renderBookings(bookings) {
         const container = document.getElementById('tickets-container');

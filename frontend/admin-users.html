@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Панель администратора — Airline App</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://jsdelivr.net" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://jsdelivr.net" rel="stylesheet">
+    
+    <style>
+        /* Общие стили в тон вашего шаблона */
+        body {
+            background-color: #f8f9fa;
+            font-family: system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-column: column;
+        }
+        .main-wrapper {
+            flex: 1;
+        }
+        .info-card, .admin-card {
+            background: #ffffff;
+            border: 1px solid #e3e6f0;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.05);
+        }
+        .section-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 700;
+            color: #4e73df;
+        }
+        .table-responsive {
+            background: #ffffff;
+            border-radius: 0.375rem;
+        }
+        footer {
+            background-color: #ffffff;
+            border-top: 1px solid #e3e6f0;
+            padding: 1.5rem 0;
+            color: #858796;
+            font-size: 0.85rem;
+        }
+        /* Стили аватарок как на домашней */
+        .avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #fff;
+            font-size: 0.85rem;
+        }
+        .av-blue { background-color: #4e73df; }
+    </style>
+</head>
+<body>
+
+<div class="main-wrapper pb-5">
+    <!-- ══════════════ NAVBAR ══════════════ -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="index.html">
+                <i class="bi bi-airplane-fill text-primary me-2"></i>Airline Admin
+            </a>
+            <button class="navbar-expand-lg-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto gap-2">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Главная</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="admin.html"><i class="bi bi-shield-lock-fill me-1"></i>Панель</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ══════════════ MAIN CONTENT ══════════════ -->
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="fw-bold mb-1">Панель управления</h2>
+                <p class="text-muted small mb-0">Управление рейсами, пользователями и системными процессами авиакомпании</p>
+            </div>
+            <span class="badge bg-danger p-2 fs-6"><i class="bi bi-person-badge me-2"></i>Администратор</span>
+        </div>
+
+        <div class="row g-4">
+            <!-- Левая колонка: Форма добавления нового рейса -->
+            <div class="col-xl-4">
+                <div class="admin-card">
+                    <h5 class="fw-bold mb-3">
+                        <i class="bi bi-plus-circle-fill text-primary me-2"></i>Добавить новый рейс
+                    </h5>
+                    <form id="add-flight-form">
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Номер рейса</label>
+                            <input type="text" id="flight-number" class="form-control form-control-sm" placeholder="SU-1420" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Город вылета</label>
+                            <input type="text" id="dep-city" class="form-control form-control-sm" placeholder="Москва" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Город прилета</label>
+                            <input type="text" id="arr-city" class="form-control form-control-sm" placeholder="Сочи" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Дата и время вылета</label>
+                            <input type="datetime-local" id="dep-time" class="form-control form-control-sm" required>
+                        </div>
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <label class="form-label small fw-bold">Кол-во мест</label>
+                                <input type="number" id="seats" class="form-control form-control-sm" value="150" required>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label small fw-bold">Цена (₽)</label>
+                                <input type="number" id="price" class="form-control form-control-sm" placeholder="5500" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-sm w-100 fw-bold">
+                            <i class="bi bi-send-fill me-1"></i>Создать рейс
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Правая колонка: Списки и Сводки -->
+            <div class="col-xl-8">
+                <!-- Таблица рейсов -->
+                <div class="info-card mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold mb-0">
+                            <i class="bi bi-list-stars text-primary me-2"></i>Список активных рейсов
+                        </h5>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0 small">
+                            <thead class="table-light text-muted">
+                                <tr>
+                                    <th>Рейс</th>
+                                    <th>Направление</th>
+                                    <th>Дата вылета</th>
+                                    <th>Цена</th>
+                                    <th>Действие</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-flights-list">
+                                <!-- Сюда admin.js подставит данные рейсов -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Таблица пользователей -->
+                <div class="info-card">
+                    <h5 class="fw-bold mb-3">
+                        <i class="bi bi-people-fill text-primary me-2"></i>Управление пользователями
+                    </h5>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0 small">
+                            <thead class="table-light text-muted">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Логин</th>
+                                    <th>Email</th>
+                                    <th>Роль</th>
+                                    <th>Действие</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-users-list">
+                                <!-- Сюда admin.js подставит данные пользователей -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div> <!-- /col-xl-8 -->
+        </div> <!-- /row -->
+    </div> <!-- /container -->
+</div> <!-- /main-wrapper -->
+
+<!-- ══════════════ FOOTER ══════════════ -->
+<footer>
+    <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+        <span>© 2026 <strong>Airline Web Application</strong> — Панель Администратора</span>
+        <span>
+            <strong>Марьичев Игорь</strong> &nbsp;·&nbsp; <strong>Хуссейн Моханад</strong>
+        </span>
+    </div>
+</footer>
+
+<!-- Скрипты -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/api.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>
