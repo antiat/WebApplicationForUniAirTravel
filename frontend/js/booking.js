@@ -1,39 +1,37 @@
 document.addEventListener('DOMContentLoaded', () => {
     const bookingForm = document.getElementById('booking-form');
-    
-    const flightId = localStorage.getItem('selectedFlightId');
 
-    if (!flightId) {
-        alert('Рейс не выбран. Возврат на главную страницу.');
-        window.location.href = 'index.html';
-        return;
-    }
+    if (!bookingForm) return;
 
-    if (bookingForm) {
-        bookingForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
+    bookingForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
 
-            const token = localStorage.getItem('token');
-            if (!token) {
-                alert('Пожалуйста, авторизуйтесь для бронирования!');
-                window.location.href = 'login.html';
-                return;
-            }
+        if (!Auth.isLoggedIn()) {
+            alert('Необходимо авторизоваться');
+            window.location.href = 'login.html';
+            return;
+        }
 
-            // Получаем номер места из формы (убедитесь, что в HTML есть id="seat-number")
-            const seatInput = document.getElementById('seat-number');
-            const seatNumber = seatInput ? seatInput.value : "1A"; // Если поля нет, ставим заглушку 1A
+        const flightId =
+            new URLSearchParams(window.location.search)
+                .get('flight_id');
 
-            try {
-                // ВЫЗОВ СТРОГО ПО СТРУКТУРЕ CLAUDE: ApiService.bookings.create(...)
-                await ApiService.bookings.create(parseInt(flightId), seatNumber);
-                alert('Успешно забронировано!');
-                
-                localStorage.removeItem('selectedFlightId');
-                window.location.href = 'my-tickets.html'; 
-            } catch (error) {
-                alert(`Ошибка: ${error.message}`);
-            }
-        });
-    }
+        const seatNumber =
+            document.getElementById('seat-number')?.value || '1A';
+
+        try {
+            await api.bookings.create({
+                flight_id: Number(flightId),
+                seat_number: seatNumber
+            });
+
+            alert('Бронирование успешно создано');
+
+            window.location.href = 'my-tickets.html';
+
+        } catch (err) {
+            console.error(err);
+            alert(err.message || 'Ошибка бронирования');
+        }
+    });
 });
